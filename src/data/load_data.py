@@ -1,79 +1,71 @@
+import json
+import argparse
 import requests
-from bs4 import BeautifulSoup
 import os
+from os import path
 from src.util.logging import log_message
 
 def load_file(url: str, file_path: str) -> None:
     '''Download a file from a URL to a specified file path.'''
-    response = requests.get(url)
+    response = requests.get(url, stream=True)
     response.raise_for_status()  # Raise an error for bad status codes
     with open(file_path, 'wb') as file:
-        file.write(response.content)
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
 
-def download_files_from_links(selection_fn: callable, url: str, max_files: int = None, raw_dir: str = None) -> None:
+def main(config_path: str) -> None:
     '''
-    download files from links selected by selection_fn on the given URL page.
+    Download documents specified in the configuration file. The config file should be a JSON
+    with a list of 'documents', each containing at least 'url' and 'id' fields.
     arguments:
-        selection_fn: A function that takes a BeautifulSoup object and returns a list of link elements.
-        url: The URL of the webpage to scrape links from
-        max_files: Maximum number of files to download. If None, download all.
-        raw_dir: Directory to save downloaded files. If None, defaults to 'data/raw'.
+        config_path: Path to the configuration JSON file.
     returns:
         None
     '''
-    if raw_dir is None:
-        raw_dir = os.path.join('data', 'raw')
-    os.makedirs(raw_dir, exist_ok=True)
 
-    # Fetch the webpage
-    response = requests.get(url)
-    response.raise_for_status()
-    
-    # Parse HTML
-    soup = BeautifulSoup(response.content, 'html.parser')
-    links = selection_fn(soup)
-    
-    if not links:
-        log_message('No links found on the page.')
+    if not path.exists(config_path):
+        log_message(f'⚡️ Configuration file {config_path} does not exist.')
         return
     
-    # Filter for PDF files only
-    links = [link for link in links if link['href'].lower().endswith('.pdf')]
-    if max_files:
-        links = links[:max_files]
-    for link in links:
-        href = link['href']
-        # Make absolute URL if relative
-        if not href.startswith('http'):
-            href = f'https://www.faa.gov{href}'
-        
-        # Extract filename from URL
-        filename = os.path.join(raw_dir, href.split('/')[-1])
-        try:
-            log_message(f'Downloading {filename}...')
-            load_file(href, filename)
-            log_message(f'Successfully downloaded {filename}')
-        except Exception as e:
-            log_message(f'Failed to download {href}: {e}')
-def main():
-    def selection_fn(soup):
-        '''Select links from the table with caption "Reference Handbooks".'''
-        target_table = None
-        tables = soup.find_all('table')
-        for table in tables:
-            caption = table.find('caption')
-            if caption and 'Reference Handbooks' in caption.get_text():
-                target_table = table
-                break
-        
-        if not target_table:
-            log_message('Table with "Reference Handbooks" caption not found')
-            return
-        return target_table.find_all('a', href=True)
+    with open(config_path, 'r') as f:
+        config = json.load(f)
 
-    url = 'https://www.faa.gov/regulations_policies/handbooks_manuals/aviation'
-    download_files_from_links(selection_fn, url)
+    if not config.get('documents'):
+        log_message('⚡️ No documents found in the configuration file.')
+        return
+    project = config.get('project', 'default_project')
+    version = config.get('version', '1.0')
+    base_dir = path.join(config.get('base_directory', 'data'), project, version)
+    
+    for i, doc in enumerate(config['documents']):
+            url = doc.get('url')
+            id = doc.get('id')
+            if not url or not id:
+                log_message(f'⚡️ No URL or ID found for document at index {i}. Skipping download.')
+                continue
+            
+            title = doc.get('title', f'document_{id}')
+            if doc.get('direct_download', True):
+                # Create directories which are specific to the type of document
+                directory = doc.get('directory', '')
+                current_dir = path.join(base_dir, directory)
+                os.makedirs(current_dir, exist_ok=True)
+                
+                filename = url.split('/')[-1]
+                file_path = path.join(current_dir, filename)
+                try:
+                    log_message(f'⏳ Downloading {filename} from {url}...')
+                    load_file(url, file_path)
+                    log_message(f'✅ Successfully downloaded {filename}')
+                except Exception as e:
+                    log_message(f'⚡️ Failed to download {url}:\n{e}')
+            else:
+                log_message(f'⚠️ Document ID {id} "{title}" does not support direct download!\nPlease, download manually and place it in directory "{directory}".\nURL: {url}')
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Download aircraft-related documents from the config file. Defaults to Airbus A320-related and generic FAA documents.')
+    parser.add_argument('--config', '-c', type=str, default=path.join('config', 'airbus_a320.json'), help='Path to the configuration file specifying document sources')
+    args = parser.parse_args()
+
+    main(args.config)
     
