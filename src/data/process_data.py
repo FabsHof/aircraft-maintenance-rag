@@ -1,7 +1,7 @@
 import os
 from os import path
 import glob
-from src.util.logging import log_message
+from src.util.logging import log_info
 
 def process_data(raw_dir: str, clean_dir: str) -> None:
     '''
@@ -21,13 +21,13 @@ def process_data(raw_dir: str, clean_dir: str) -> None:
         # For now, just copy the raw file to clean file as a placeholder
         with open(raw_file, 'rb') as rf, open(clean_file, 'wb') as cf:
             cf.write(rf.read())
-        log_message(f'Processing {raw_file} and saving to {clean_file}')
+        log_info(f'Processing {raw_file} and saving to {clean_file}')
 
 def main():
     raw_dir = path.join('data', 'raw')
     clean_dir = path.join('data', 'clean')
     if not path.exists(raw_dir):
-        log_message(f'Raw data directory {raw_dir} does not exist. Please run the data loading step first.')
+        log_info(f'Raw data directory {raw_dir} does not exist. Please run the data loading step first.')
         return
     process_data(raw_dir, clean_dir)
 

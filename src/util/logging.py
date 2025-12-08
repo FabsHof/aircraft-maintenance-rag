@@ -1,11 +1,13 @@
 import logging
-from datetime import datetime
+import os
 
-logging.basicConfig(level=logging.INFO)
+os.makedirs('logs', exist_ok=True)
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[logging.FileHandler('logs/app.log'), logging.StreamHandler()]
+    )
 
-def get_current_timestamp():
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-def log_message(message):
-    timestamp = get_current_timestamp()
-    logging.info(f'[{timestamp}] {message}')
+def log_info(message):
+    logging.info(message)

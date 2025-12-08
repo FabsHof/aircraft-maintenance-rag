@@ -229,6 +229,42 @@
             "authentication_required": false,
             "direct_download": true,
             "platform": "slideshare"
+        },
+        {
+            "id": 19,
+            "title": "A320 Aircraft Characteristics Airport & Maintenance Planning",
+            "url": "https://aircraft.airbus.com/sites/g/files/jlcbta126/files/2025-01/AC_A320_0624.pdf",
+            "filename": "AC_320_0624.pdf",
+            "directory": "pilot",
+            "role": "pilot_operator",
+            "doc_type": "operating_procedures",
+            "source": "Airbus",
+            "authentication_required": false,
+            "direct_download": true
+        },
+        {
+            "id": 20,
+            "title": "Aircraft Maintenance Manual - AS-AMM-01-000",
+            "url": "https://www.aerospool.sk/downloads/RTC/AS-AMM-01-000_I1_R6_20210428.pdf",
+            "filename": "AS-AMM-01-000.pdf",
+            "directory": "maintenance",
+            "role": "maintenance_technician",
+            "doc_type": "maintenance_manuals",
+            "source": "Aerospool",
+            "authentication_required": false,
+            "direct_download": true
+        },
+        {
+            "id": 21,
+            "title": "A318/A319/A320/A321 Maintenance Planning Document",
+            "url": "https://portail-navigabilite.online/espace_inspecteurs/uploads/mpda320v1_r47_i00.pdf",
+            "filename": "MPD_A320_Family.pdf",
+            "directory": "maintenance",
+            "role": "maintenance_technician",
+            "doc_type": "maintenance_planning",
+            "source": "Airbus",
+            "authentication_required": false,
+            "direct_download": true
         }
     ]
 }

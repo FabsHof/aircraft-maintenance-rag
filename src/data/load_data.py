@@ -3,7 +3,7 @@ import argparse
 import requests
 import os
 from os import path
-from src.util.logging import log_message
+from src.util.logging import log_info
 
 def load_file(url: str, file_path: str) -> None:
     '''Download a file from a URL to a specified file path.'''
@@ -24,14 +24,14 @@ def main(config_path: str) -> None:
     '''
 
     if not path.exists(config_path):
-        log_message(f'⚡️ Configuration file {config_path} does not exist.')
+        log_info(f'⚡️ Configuration file {config_path} does not exist.')
         return
     
     with open(config_path, 'r') as f:
         config = json.load(f)
 
     if not config.get('documents'):
-        log_message('⚡️ No documents found in the configuration file.')
+        log_info('⚡️ No documents found in the configuration file.')
         return
     project = config.get('project', 'default_project')
     version = config.get('version', '1.0')
@@ -41,7 +41,7 @@ def main(config_path: str) -> None:
             url = doc.get('url')
             id = doc.get('id')
             if not url or not id:
-                log_message(f'⚡️ No URL or ID found for document at index {i}. Skipping download.')
+                log_info(f'⚡️ No URL or ID found for document at index {i}. Skipping download.')
                 continue
             
             title = doc.get('title', f'document_{id}')
@@ -54,13 +54,13 @@ def main(config_path: str) -> None:
                 filename = url.split('/')[-1]
                 file_path = path.join(current_dir, filename)
                 try:
-                    log_message(f'⏳ Downloading {filename} from {url}...')
+                    log_info(f'⏳ Downloading {filename} from {url}...')
                     load_file(url, file_path)
-                    log_message(f'✅ Successfully downloaded {filename}')
+                    log_info(f'✅ Successfully downloaded {filename}')
                 except Exception as e:
-                    log_message(f'⚡️ Failed to download {url}:\n{e}')
+                    log_info(f'⚡️ Failed to download {url}:\n{e}')
             else:
-                log_message(f'⚠️ Document ID {id} "{title}" does not support direct download!\nPlease, download manually and place it in directory "{directory}".\nURL: {url}')
+                log_info(f'⚠️ Document ID {id} "{title}" does not support direct download!\nPlease, download manually and place it in directory "{directory}".\nURL: {url}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download aircraft-related documents from the config file. Defaults to Airbus A320-related and generic FAA documents.')
