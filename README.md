@@ -41,12 +41,6 @@ Follow these steps to set up the development environment:
 The project uses environment variables for configuration. Copy `.env.example` to `.env` and customize the values:
 
 - **LM_STUDIO_URL**: URL for LM Studio API endpoint (default: `http://localhost:1234/v1`)
-- **VISUAL_MODEL_NAME**: Model name for image parsing (default: `google/gemma-3-4b`)
-- **EMBEDDING_MODEL_NAME**: HuggingFace model for embeddings (default: `sentence-transformers/all-MiniLM-L6-v2`)
-- **EMBEDDING_DEVICE**: Device for embedding model (default: `cpu`, use `cuda` for GPU)
-- **CHUNK_SIZE**: Text chunk size for splitting (default: `150`)
-- **CHUNK_OVERLAP**: Overlap between chunks (default: `30`)
-- **BATCH_SIZE**: Batch size for document ingestion (default: `5000`)
 
 ## 🚀 getting started
 
