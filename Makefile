@@ -14,3 +14,8 @@ split_and_store_data:
 	@echo "⏳ Splitting and storing data in vector store..."
 	@python -m src.data.split_and_store_data --clear_db
 	@echo "✅ Data split and stored."
+start_rag_system:
+	# Target to start the RAG system
+	@echo "🚀 Starting RAG system..."
+	@python main.py
+	@echo "✅ RAG system shut down."

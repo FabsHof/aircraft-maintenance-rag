@@ -49,6 +49,7 @@ There is a central Makefile to run common tasks. Here are some useful commands:
 - `make load_data` Load raw data files as specified in the configuration file `config/data_config.json`. Another config file might be specified by utilizing the `--config` argument, e.g., `make load_data --config=config/another_config.json`.
 - `make process_data` Clean and preprocess raw data files, storing the results in the `data/clean` directory.
 - `make split_and_store_data` Split the cleaned data into chunks and store them in the vector store. Provide `--clear_db` or `--dry-run` flags as needed.
+- `make start_rag_system` Start the RAG system, allowing you to interactively ask questions about Airbus A320 maintenance and operations.
 
 ## 🏗️ architectural decisions
 
